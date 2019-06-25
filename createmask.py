@@ -19,10 +19,13 @@ people_class = 15
 model.eval()
 print ("Model Loaded")
 
+blur = torch.FloatTensor([[[[1.0, 2.0, 1.0],[2.0, 4.0, 2.0],[1.0, 2.0, 1.0]]]]) / 16.0
+
 # move the input and model to GPU for speed if available
 if torch.cuda.is_available():
 	model.to('cuda')
-
+	blur = blur.to('cuda')
+	
 import urllib
 from torchvision import transforms
 
@@ -50,7 +53,8 @@ def makeSegMask(img):
 	a = (1.0 - F.relu(torch.tanh(bgOut * 0.30 - 1.0))).pow(0.5) * 2.0
 
 	people = segmentation.eq( torch.ones_like(segmentation).long().fill_(people_class) ).float()
-	if torch.cuda.is_available():		blur = blur.to('cuda')
+
+
 
 	people.unsqueeze_(0).unsqueeze_(0)
 	people = F.conv2d(people, blur, stride=1, padding=1)
