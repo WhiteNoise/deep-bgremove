@@ -54,12 +54,10 @@ def makeSegMask(img):
 
 	people = segmentation.eq( torch.ones_like(segmentation).long().fill_(people_class) ).float()
 
-
-
 	people.unsqueeze_(0).unsqueeze_(0)
-	people = F.conv2d(people, blur, stride=1, padding=1)
-	people = F.conv2d(people, blur, stride=1, padding=1)
-	people = F.conv2d(people, blur, stride=1, padding=1)
+	
+	for i in range(3):
+		people = F.conv2d(people, blur, stride=1, padding=1)
 
 	# combined_mask = F.hardtanh(a * b)
 	combined_mask = F.relu(F.hardtanh(a * (people.squeeze().pow(1.5)) ))
